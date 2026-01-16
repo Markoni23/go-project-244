@@ -9,7 +9,7 @@ lint:
 	golangci-lint run ./...
 
 build:
-	go build -o bin/gengiff ./main.go
+	go build -o bin/gengiff ./cmd/gendiff/main.go
 
 run:
-	go run main.go
+	go run cmd/gendiff/main.go

@@ -1,8 +1,9 @@
 package main
 
 import (
+	"code"
 	"context"
-	fileparser "file-parser"
+	"errors"
 	"log"
 	"os"
 
@@ -34,7 +35,10 @@ func main() {
 		},
 		ArgsUsage: "<first_file> <second_file>",
 		Action: func(ctx context.Context, c *cli.Command) error {
-			return fileparser.ParseFiles(firstFile, secondFile)
+			if firstFile == "" || secondFile == "" {
+				return errors.New("maut be two files")
+			}
+			return code.GenDiff(firstFile, secondFile)
 		},
 	}
 
