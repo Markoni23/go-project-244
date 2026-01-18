@@ -4,6 +4,7 @@ import (
 	"code"
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"os"
 
@@ -38,7 +39,12 @@ func main() {
 			if firstFile == "" || secondFile == "" {
 				return errors.New("maut be two files")
 			}
-			return code.GenDiff(firstFile, secondFile)
+			res, err := code.GenDiff(firstFile, secondFile)
+			if err != nil {
+				return err
+			}
+			fmt.Println(res)
+			return nil
 		},
 	}
 

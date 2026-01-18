@@ -55,20 +55,23 @@ func ParseFile(fileName string) (map[string]any, error) {
 		return res, err
 	}
 
-	json.Unmarshal(content, &res)
-
+	err = json.Unmarshal(content, &res)
+	if err != nil {
+		return res, err
+	}
+	
 	return res, nil
 }
 
-func GenDiff(firstFile, secondFile string) error {
+func GenDiff(firstFile, secondFile string) (string, error) {
 	firstFileMap, err := ParseFile(firstFile)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	secondFileMap, err := ParseFile(secondFile)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	res := make(FileDiff, len(firstFileMap))
@@ -100,13 +103,14 @@ func GenDiff(firstFile, secondFile string) error {
 		keys = append(keys, key)
 	}
 
+	var sb strings.Builder
 	slices.Sort(keys)
 
-	fmt.Println("{")
+	sb.WriteString("{\n")
 	for _, key := range keys {
-		fmt.Print(res[key].Print(2))
+		sb.WriteString(res[key].Print(2))
 	}
-	fmt.Println("}")
+	sb.WriteString("}")
 
-	return nil
+	return sb.String(), nil
 }
