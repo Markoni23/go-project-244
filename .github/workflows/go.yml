@@ -35,6 +35,9 @@ jobs:
 
     - name: Test
       run: make test
+    
+    - name: Generate coverage file
+      run: go test -coverprofile=coverage.out
 
   sonarqube:
     name: SonarQube
