@@ -1,7 +1,7 @@
 package code
 
 import (
-	"encoding/json"
+	"code/parsers"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -55,11 +55,20 @@ func ParseFile(fileName string) (map[string]any, error) {
 		return res, err
 	}
 
-	err = json.Unmarshal(content, &res)
+	extension := filepath.Ext(path)[1:]
+
+	parser, err := parsers.ParserFabric{}.CreateParser(extension)
+
 	if err != nil {
 		return res, err
 	}
-	
+
+	res, err = parser.Parse(content)
+
+	if err != nil {
+		return res, err
+	}
+
 	return res, nil
 }
 

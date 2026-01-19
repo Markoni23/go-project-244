@@ -15,12 +15,9 @@ func TestGenDiff(t *testing.T) {
 		want       string
 		wantErr    bool
 	}{
-		{
-			"plain json",
-			"testdata/fixture/test1.json",
-			"testdata/fixture/test2.json",
-			"{\n  + added_field: 4\n  - changed_field: 2\n  + changed_field: 2.4\n    normal_field: 1\n  - removed_field: 3\n}", false},
 		/*
+			Plain json -> json format
+
 			test1.json
 			{
 				"normal_field": "1",
@@ -44,6 +41,45 @@ func TestGenDiff(t *testing.T) {
 			  - removed_field: 3
 			}
 		*/
+		{
+			"plain json",
+			"testdata/fixture/json/test1.json",
+			"testdata/fixture/json/test2.json",
+			"{\n  + added_field: 4\n  - changed_field: 2\n  + changed_field: 2.4\n    normal_field: 1\n  - removed_field: 3\n}",
+			false,
+		},
+		/*
+			Plain yml -> json format
+
+			test1.yml
+
+			normal_field: '1'
+			changed_field: 2
+			removed_field: 3
+
+
+			test2.yml
+
+			normal_field: '1'
+			changed_field: 2.4
+			added_field: 4
+
+			want
+			{
+				+ added_field: 4
+				- changed_field: 2
+				+ changed_field: 2.4
+				normal_field: 1
+				- removed_field: 3
+			}
+		*/
+		{
+			"Plain yml -> json format",
+			"testdata/fixture/yml/test1.yml",
+			"testdata/fixture/yml/test2.yml",
+			"{\n  + added_field: 4\n  - changed_field: 2\n  + changed_field: 2.4\n    normal_field: 1\n  - removed_field: 3\n}",
+			false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -52,7 +88,7 @@ func TestGenDiff(t *testing.T) {
 				assert.NotNil(t, gotErr, "expected error")
 			}
 
-			assert.Equal(t, got, tt.want)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
