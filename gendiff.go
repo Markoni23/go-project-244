@@ -22,6 +22,9 @@ func GenDiff(firstFile, secondFile string, format string) (string, error) {
 	diff := differ.CalculateDiffTree(firstFileMap, secondFileMap)
 
 	res, err := FormatDiff(diff, format)
+	if err != nil {
+		return "", err
+	}
 	return res, nil
 }
 
