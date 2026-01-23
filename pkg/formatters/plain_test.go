@@ -5,8 +5,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tiendc/go-deepcopy"
 	"github.com/stretchr/testify/assert"
+	"github.com/tiendc/go-deepcopy"
 )
 
 func TestPlainFormatter_format(t *testing.T) {
@@ -64,7 +64,7 @@ func TestPlainFormatter_format(t *testing.T) {
 				d.AddNode(node)
 			}
 			var diffCopy differ.Diff
-			deepcopy.Copy(&diffCopy, d)
+			_ = deepcopy.Copy(&diffCopy, d)
 			d.AddNode(differ.NewNode("differ_field", &diffCopy))
 			got, gotErr := PlainFormatter{}.format("", d)
 			if tt.wantErr {

@@ -63,7 +63,7 @@ func TestStylishFormatter_formatDiff(t *testing.T) {
 			}
 
 			var diffCopy differ.Diff
-			deepcopy.Copy(&diffCopy, d)
+			_ = deepcopy.Copy(&diffCopy, d)
 			d.AddNode(differ.NewNode("differ_field", &diffCopy))
 
 			got, gotErr := StylishFormatter{}.formatDiff(d, 0)
