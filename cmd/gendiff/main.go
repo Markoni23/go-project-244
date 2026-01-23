@@ -3,7 +3,6 @@ package main
 import (
 	"code"
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -12,7 +11,7 @@ import (
 )
 
 func main() {
-	var firstFile, secondFile string
+	var firstFile, secondFile, format string
 	cmd := &cli.Command{
 		Name:  "gendiff",
 		Usage: "Compares two configuration files and shows a difference",
@@ -22,6 +21,8 @@ func main() {
 				Aliases:     []string{"f"},
 				Usage:       "output format",
 				DefaultText: "stylish",
+				Value: "stylish",
+				Destination: &format,
 			},
 		},
 		Arguments: []cli.Argument{
@@ -36,10 +37,13 @@ func main() {
 		},
 		ArgsUsage: "<first_file> <second_file>",
 		Action: func(ctx context.Context, c *cli.Command) error {
+
 			if firstFile == "" || secondFile == "" {
-				return errors.New("maut be two files")
+				firstFile, secondFile = "../../testdata/nested_json1.json", "../../testdata/nested_json2.json"
+
+				//				return errors.New("must be two files")
 			}
-			res, err := code.GenDiff(firstFile, secondFile)
+			res, err := code.GenDiff(firstFile, secondFile, format)
 			if err != nil {
 				return err
 			}

@@ -2,6 +2,7 @@ package code_test
 
 import (
 	"code"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,80 +16,32 @@ func TestGenDiff(t *testing.T) {
 		want       string
 		wantErr    bool
 	}{
-		/*
-			Plain json -> json format
 
-			test1.json
-			{
-				"normal_field": "1",
-				"changed_field": 2.0,
-				"removed_field": 3
-			}
-
-			test2.json
-			{
-				"normal_field": "1",
-				"changed_field": 2.4,
-				"added_field": 4
-			}
-
-			want
-			{
-			  + added_field: 4
-			  - changed_field: 2
-			  + changed_field: 2.4
-			    normal_field: 1
-			  - removed_field: 3
-			}
-		*/
 		{
 			"plain json",
-			"testdata/fixture/json/test1.json",
-			"testdata/fixture/json/test2.json",
-			"{\n  + added_field: 4\n  - changed_field: 2\n  + changed_field: 2.4\n    normal_field: 1\n  - removed_field: 3\n}",
+			"testdata/fixture/json/nested1.json",
+			"testdata/fixture/json/nested2.json",
+			"testdata/fixture/expected/nested_stylish.txt",
 			false,
 		},
-		/*
-			Plain yml -> json format
-
-			test1.yml
-
-			normal_field: '1'
-			changed_field: 2
-			removed_field: 3
-
-
-			test2.yml
-
-			normal_field: '1'
-			changed_field: 2.4
-			added_field: 4
-
-			want
-			{
-				+ added_field: 4
-				- changed_field: 2
-				+ changed_field: 2.4
-				normal_field: 1
-				- removed_field: 3
-			}
-		*/
 		{
 			"Plain yml -> json format",
-			"testdata/fixture/yml/test1.yml",
-			"testdata/fixture/yml/test2.yml",
-			"{\n  + added_field: 4\n  - changed_field: 2\n  + changed_field: 2.4\n    normal_field: 1\n  - removed_field: 3\n}",
+			"testdata/fixture/yml/nested1.yml",
+			"testdata/fixture/yml/nested2.yml",
+			"testdata/fixture/expected/nested_stylish.txt",
 			false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, gotErr := code.GenDiff(tt.firstFile, tt.secondFile)
+			expected, _ := os.ReadFile(tt.want)
+
+			got, gotErr := code.GenDiff(tt.firstFile, tt.secondFile, "stylish")
 			if tt.wantErr {
 				assert.NotNil(t, gotErr, "expected error")
 			}
 
-			assert.Equal(t, tt.want, got)
+			assert.Equal(t, string(expected), got)
 		})
 	}
 }

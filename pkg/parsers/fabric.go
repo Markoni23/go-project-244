@@ -2,10 +2,6 @@ package parsers
 
 import "errors"
 
-type ParserFabricInterface interface {
-	CreateParser(extension string) (ParserInterface, error)
-}
-
 type ParserFabric struct{}
 
 func (f ParserFabric) CreateParser(extension string) (ParserInterface, error) {
