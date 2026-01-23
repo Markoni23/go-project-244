@@ -9,7 +9,7 @@ import (
 
 type StylishFormatter struct{}
 
-func (s StylishFormatter) Format(diff *differ.Diff, level int) (string, error) {
+func (s StylishFormatter) Format(diff *differ.Diff) (string, error) {
 	return s.formatDiff(diff, 0)
 }
 

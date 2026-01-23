@@ -10,6 +10,8 @@ func (f FormatterFabric) CreateFormatter(formatType string) (FormatterInterface,
 		return StylishFormatter{}, nil
 	case "plain":
 		return PlainFormatter{}, nil
+	case "json":
+		return JSONFormatter{}, nil
 	default:
 		return nil, errors.New("not implemented for format " + formatType)
 	}

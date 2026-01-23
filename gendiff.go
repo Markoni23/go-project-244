@@ -64,7 +64,7 @@ func FormatDiff(diff *differ.Diff, format string) (string, error) {
 		return "", err
 	}
 
-	res, err := formatter.Format(diff, 1)
+	res, err := formatter.Format(diff)
 
 	if err != nil {
 		return "", err

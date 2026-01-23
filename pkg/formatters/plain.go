@@ -8,7 +8,7 @@ import (
 
 type PlainFormatter struct{}
 
-func (p PlainFormatter) Format(diff *differ.Diff, level int) (string, error) {
+func (p PlainFormatter) Format(diff *differ.Diff) (string, error) {
 	return p.format("", diff)
 }
 
@@ -66,13 +66,4 @@ func (p PlainFormatter) formatValue(value any) string {
 	default:
 		return fmt.Sprintf("%v", val)
 	}
-}
-
-func isDiff(value any) bool {
-	if value == nil {
-		return false
-	}
-
-	_, ok := value.(*differ.Diff)
-	return ok
 }
