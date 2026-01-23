@@ -75,3 +75,60 @@ func TestDiff_Keys(t *testing.T) {
 		})
 	}
 }
+
+func TestCalculateDiffTree(t *testing.T) {
+	tests := []struct {
+		name        string
+		first       map[string]any
+		second      map[string]any
+		wantedNodes []*differ.DiffNode
+	}{
+		{
+			"basic",
+			map[string]any{"same": "same", "removed": "removed", "changed": "origChanged"},
+			map[string]any{"same": "same", "added": "added", "changed": "newChanged", "object": map[string]any{"key": "val"}},
+			[]*differ.DiffNode{
+				{
+					FieldName:     "added",
+					NewValue:      "added",
+					OriginalValue: nil,
+					Status:        differ.ADDED,
+					Type:          differ.SCALAR_TYPE,
+				},
+				{
+					FieldName:     "changed",
+					NewValue:      "newChanged",
+					OriginalValue: "origChanged",
+					Status:        differ.CHANGED,
+					Type:          differ.SCALAR_TYPE,
+				},
+				{
+					FieldName: "object",
+					NewValue:  map[string]any{"key": "val"},
+					Status:    differ.ADDED,
+					Type:      differ.OBJECT_TYPE,
+				},
+				{
+					FieldName:     "removed",
+					OriginalValue: "removed",
+					Status:        differ.REMOVED,
+					Type:          differ.SCALAR_TYPE,
+				},
+				{
+					FieldName:     "same",
+					OriginalValue: "same",
+					Status:        differ.SAME,
+					Type:          differ.SCALAR_TYPE,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := differ.CalculateDiffTree(tt.first, tt.second)
+			for i, key := range got.Keys() {
+				assert.Equal(t, tt.wantedNodes[i], got.GetNode(key))
+			}
+		})
+	}
+}

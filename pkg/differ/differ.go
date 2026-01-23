@@ -67,10 +67,8 @@ func (d *Diff) CheckNode(key string, value any) {
 	node, exists := d.nodes[key]
 
 	if !exists {
-		newNode := NewNode(key, value)
-		newNode.NewValue = value
-		newNode.Status = ADDED
-		d.AddNode(newNode)
+		newNode := DiffNode{Type: ValueType(value), Status: ADDED, NewValue: value, FieldName: key}
+		d.AddNode(&newNode)
 		return
 	}
 
