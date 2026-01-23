@@ -1,0 +1,4 @@
+Property 'added_field' was added with value: 'added'
+Property 'changed_field' was updated. From 'orig' to 'new'
+Property 'differ_field' was removed
+Property 'removed_field' was removed

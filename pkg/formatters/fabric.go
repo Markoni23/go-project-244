@@ -8,6 +8,8 @@ func (f FormatterFabric) CreateFormatter(formatType string) (FormatterInterface,
 	switch formatType {
 	case "stylish":
 		return StylishFormatter{}, nil
+	case "plain":
+		return PlainFormatter{}, nil
 	default:
 		return nil, errors.New("not implemented for format " + formatType)
 	}

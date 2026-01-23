@@ -5,19 +5,21 @@ import (
 	"os"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/tiendc/go-deepcopy"
+	"github.com/stretchr/testify/assert"
 )
 
-func TestStylishFormatter_formatDiff(t *testing.T) {
+func TestPlainFormatter_format(t *testing.T) {
 	tests := []struct {
 		name    string
+		format  string
 		nodes   []*differ.DiffNode
 		want    string
 		wantErr bool
 	}{
 		{
-			"stylish diff",
+			"plain diff",
+			"plain",
 			[]*differ.DiffNode{
 				{
 					FieldName:     "same_field",
@@ -48,10 +50,10 @@ func TestStylishFormatter_formatDiff(t *testing.T) {
 					FieldName:     "object_field",
 					OriginalValue: map[string]any{"test": "t"},
 					Status:        differ.SAME,
-					Type:          differ.SCALAR_TYPE,
+					Type:          differ.OBJECT_TYPE,
 				},
 			},
-			"../../testdata/fixture/expected/formatters_tests/stylish.txt",
+			"../../testdata/fixture/expected/formatters_tests/plain.txt",
 			false,
 		},
 	}
@@ -61,12 +63,10 @@ func TestStylishFormatter_formatDiff(t *testing.T) {
 			for _, node := range tt.nodes {
 				d.AddNode(node)
 			}
-
 			var diffCopy differ.Diff
 			deepcopy.Copy(&diffCopy, d)
 			d.AddNode(differ.NewNode("differ_field", &diffCopy))
-
-			got, gotErr := StylishFormatter{}.formatDiff(d, 0)
+			got, gotErr := PlainFormatter{}.format("", d)
 			if tt.wantErr {
 				assert.Errorf(t, gotErr, "")
 			}

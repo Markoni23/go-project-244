@@ -1,7 +1,6 @@
-package formatters_test
+package formatters
 
 import (
-	"code/pkg/formatters"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,15 +10,16 @@ func TestFormatterFabric_CreateFormatter(t *testing.T) {
 	tests := []struct {
 		name       string
 		formatType string
-		want       formatters.FormatterInterface
+		want       FormatterInterface
 		wantErr    bool
 	}{
-		{"Stylish formatter", "stylish", formatters.StylishFormatter{}, false},
+		{"Stylish formatter", "stylish", StylishFormatter{}, false},
+		{"Plain formatter", "plain", PlainFormatter{}, false},
 		{"Unknown formatter", "test", nil, true},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var f formatters.FormatterFabric
+			var f FormatterFabric
 			got, gotErr := f.CreateFormatter(tt.formatType)
 			if tt.wantErr {
 				assert.Error(t, gotErr, "not implemented for format "+tt.formatType)

@@ -2,6 +2,16 @@
   + added_field: added
   - changed_field: orig
   + changed_field: new
+  - differ_field: {
+      + added_field: added
+      - changed_field: orig
+      + changed_field: new
+        object_field: {
+            test: t
+        }
+      - removed_field: removed
+        same_field: same
+    }
     object_field: {
         test: t
     }
