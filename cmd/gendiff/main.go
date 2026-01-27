@@ -21,7 +21,7 @@ func main() {
 				Aliases:     []string{"f"},
 				Usage:       "output format",
 				DefaultText: "stylish",
-				Value: "stylish",
+				Value:       "stylish",
 				Destination: &format,
 			},
 		},
@@ -37,12 +37,6 @@ func main() {
 		},
 		ArgsUsage: "<first_file> <second_file>",
 		Action: func(ctx context.Context, c *cli.Command) error {
-
-			if firstFile == "" || secondFile == "" {
-				firstFile, secondFile = "../../testdata/nested_json1.json", "../../testdata/nested_json2.json"
-
-				//				return errors.New("must be two files")
-			}
 			res, err := code.GenDiff(firstFile, secondFile, format)
 			if err != nil {
 				return err
