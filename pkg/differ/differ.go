@@ -34,6 +34,9 @@ func NewNode(key string, value any) *DiffNode {
 }
 
 func ValueType(value any) DiffType {
+	if value == nil {
+		return SCALAR_TYPE
+	}
 	t := reflect.TypeOf(value)
 	if t.Kind() == reflect.Map {
 		return OBJECT_TYPE
