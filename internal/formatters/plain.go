@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"fmt"
 	"strings"
 )
@@ -17,7 +17,10 @@ func (p PlainFormatter) format(path string, diff *differ.Diff) (string, error) {
 	var currentPath, nodeRes string
 	var err error
 
-	for _, key := range diff.Keys() {
+	keys := differ.SortedKeys(diff)
+
+
+	for _, key := range keys {
 		node := diff.GetNode(key)
 
 		if path != "" {

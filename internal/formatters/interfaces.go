@@ -1,6 +1,6 @@
 package formatters
 
-import "code/pkg/differ"
+import "code/internal/differ"
 
 type FormatterInterface interface {
 	Format(diff *differ.Diff) (string, error)

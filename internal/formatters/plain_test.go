@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"os"
 	"testing"
 
@@ -9,7 +9,7 @@ import (
 	"github.com/tiendc/go-deepcopy"
 )
 
-func TestJSONFormatter_format(t *testing.T) {
+func TestPlainFormatter_format(t *testing.T) {
 	tests := []struct {
 		name    string
 		format  string
@@ -18,8 +18,8 @@ func TestJSONFormatter_format(t *testing.T) {
 		wantErr bool
 	}{
 		{
-			"json diff",
-			"json",
+			"plain diff",
+			"plain",
 			[]*differ.DiffNode{
 				{
 					FieldName:     "same_field",
@@ -53,7 +53,7 @@ func TestJSONFormatter_format(t *testing.T) {
 					Type:          differ.OBJECT_TYPE,
 				},
 			},
-			"../../testdata/fixture/expected/formatters_tests/json.json",
+			"../../testdata/fixture/expected/formatters_tests/plain.txt",
 			false,
 		},
 	}
@@ -66,7 +66,7 @@ func TestJSONFormatter_format(t *testing.T) {
 			var diffCopy differ.Diff
 			_ = deepcopy.Copy(&diffCopy, d)
 			d.AddNode(differ.NewNode("differ_field", &diffCopy))
-			got, gotErr := JSONFormatter{}.Format(d)
+			got, gotErr := PlainFormatter{}.format("", d)
 			if tt.wantErr {
 				assert.Errorf(t, gotErr, "")
 			}

@@ -1,7 +1,7 @@
 package differ_test
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,10 +48,10 @@ func TestDiff_Keys(t *testing.T) {
 				key   string
 				value any
 			}{},
-			[]string(nil),
+			[]string{},
 		},
 		{
-			"Sorted return",
+			"basic",
 			[]struct {
 				key   string
 				value any
@@ -71,7 +71,7 @@ func TestDiff_Keys(t *testing.T) {
 				diff.AddNode(node)
 			}
 			keys := diff.Keys()
-			assert.Equal(t, tt.wantKeys, keys)
+			assert.ElementsMatch(t, tt.wantKeys, keys)
 		})
 	}
 }
@@ -122,13 +122,78 @@ func TestCalculateDiffTree(t *testing.T) {
 				},
 			},
 		},
+		{
+			"two array",
+			map[string]any{"numbers": []int{1, 2, 3}},
+			map[string]any{"numbers": []int{1, 2, 3, 4}},
+			[]*differ.DiffNode{
+				{
+					FieldName:     "numbers",
+					OriginalValue: []int{1, 2, 3},
+					NewValue:      []int{1, 2, 3, 4},
+					Status:        differ.CHANGED,
+					Type:          differ.SCALAR_TYPE,
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := differ.CalculateDiffTree(tt.first, tt.second)
-			for i, key := range got.Keys() {
-				assert.Equal(t, tt.wantedNodes[i], got.GetNode(key))
+			got, _ := differ.CalculateDiffTree(tt.first, tt.second)
+			for _, key := range got.Keys() {
+				assert.Contains(t, tt.wantedNodes, got.GetNode(key))
 			}
 		})
+	}
+}
+
+func TestCalculateDiffTreeObjects(t *testing.T) {
+
+	firstMap := map[string]any{"object": map[string]any{"numbers": []int{1, 2, 3}, "test": "value"}}
+	secondMap := map[string]any{"object": map[string]any{"numbers": []int{1, 2, 3, 4}, "new_test": "new_value"}}
+
+	nestedDiff := differ.NewDiff()
+	nestedDiff.AddNode(&differ.DiffNode{
+		FieldName:     "numbers",
+		NewValue:      []int{1, 2, 3, 4},
+		OriginalValue: []int{1, 2, 3},
+		Status:        differ.CHANGED,
+		Type:          differ.SCALAR_TYPE,
+	})
+
+	nestedDiff.AddNode(&differ.DiffNode{
+		FieldName:     "test",
+		OriginalValue: "value",
+		Status:        differ.REMOVED,
+		Type:          differ.SCALAR_TYPE,
+	})
+	nestedDiff.AddNode(&differ.DiffNode{
+		FieldName: "new_test",
+		NewValue:  "new_value",
+		Status:    differ.ADDED,
+		Type:      differ.SCALAR_TYPE,
+	})
+
+	diff := differ.NewDiff()
+
+	diff.AddNode(&differ.DiffNode{
+		FieldName:     "object",
+		Status:        differ.SAME,
+		Type:          differ.OBJECT_TYPE,
+		OriginalValue: nestedDiff,
+	})
+
+	got, _ := differ.CalculateDiffTree(firstMap, secondMap)
+	for _, key := range got.Keys() {
+		node := got.GetNode(key)
+		nestedDiff, isDiff := node.OriginalValue.(*differ.Diff)
+		if isDiff {
+			expectedNested, _ := diff.GetNode(key).OriginalValue.(*differ.Diff)
+			for _, nestedKey := range nestedDiff.Keys() {
+				assert.Equal(t, expectedNested.GetNode(nestedKey), nestedDiff.GetNode(nestedKey))
+			}
+		} else {
+			assert.Equal(t, diff.GetNode(key), got.GetNode(key))
+		}
 	}
 }

@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"fmt"
 	"sort"
 	"strings"
@@ -16,7 +16,10 @@ func (s StylishFormatter) Format(diff *differ.Diff) (string, error) {
 func (s StylishFormatter) formatDiff(diff *differ.Diff, level int) (string, error) {
 	var lines []string
 	var line string
-	for _, key := range diff.Keys() {
+
+	keys := differ.SortedKeys(diff)
+
+	for _, key := range keys {
 		node := diff.GetNode(key)
 
 		origVal, err := s.formatValue(node.OriginalValue, level)

@@ -1,7 +1,7 @@
 package parsers_test
 
 import (
-	"code/pkg/parsers"
+	"code/internal/parsers"
 	"testing"
 
 	"github.com/stretchr/testify/assert"

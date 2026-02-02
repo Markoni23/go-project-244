@@ -1,6 +1,7 @@
 package differ
 
 import (
+	"fmt"
 	"reflect"
 	"slices"
 )
@@ -52,13 +53,13 @@ type Diff struct {
 
 func NewDiff() *Diff {
 	return &Diff{
-		nodes: make(map[string]*DiffNode, 0),
+		nodes: make(map[string]*DiffNode),
 		keys:  make([]string, 0),
 	}
 }
 
 func (d *Diff) Keys() []string {
-	return slices.Sorted(slices.Values(d.keys))
+	return d.keys
 }
 
 func (d *Diff) AddNode(node *DiffNode) {
@@ -66,34 +67,49 @@ func (d *Diff) AddNode(node *DiffNode) {
 	d.keys = append(d.keys, node.FieldName)
 }
 
-func (d *Diff) CheckNode(key string, value any) {
+func (d *Diff) CheckNode(key string, value any) error {
 	node, exists := d.nodes[key]
 
 	if !exists {
 		newNode := DiffNode{Type: ValueType(value), Status: ADDED, NewValue: value, FieldName: key}
 		d.AddNode(&newNode)
-		return
+		return nil
 	}
 
 	if node.Type == OBJECT_TYPE && ValueType(value) == OBJECT_TYPE {
 		node.Status = SAME
-		node.OriginalValue = CalculateDiffTree(node.OriginalValue.(map[string]any), value.(map[string]any))
-		return
+		origVal, ok := node.OriginalValue.(map[string]any)
+		if !ok {
+			return fmt.Errorf("value %v couldn't be converted to map[string]any type", node.OriginalValue)
+		}
+
+		newVal, ok := value.(map[string]any)
+		if !ok {
+			return fmt.Errorf("value %v couldn't be converted to map[string]any type", value)
+		}
+
+		calculatedDiff, err := CalculateDiffTree(origVal, newVal)
+		if err != nil {
+			return err
+		}
+		node.OriginalValue = calculatedDiff
+		return nil
 	}
 
-	if node.OriginalValue == value {
+	if reflect.DeepEqual(node.OriginalValue, value) {
 		node.Status = SAME
 	} else {
 		node.Status = CHANGED
 		node.NewValue = value
 	}
+	return nil
 }
 
 func (d *Diff) GetNode(key string) *DiffNode {
 	return d.nodes[key]
 }
 
-func CalculateDiffTree(first, second map[string]any) *Diff {
+func CalculateDiffTree(first, second map[string]any) (*Diff, error) {
 	diff := NewDiff()
 
 	for key, value := range first {
@@ -102,8 +118,14 @@ func CalculateDiffTree(first, second map[string]any) *Diff {
 	}
 
 	for key, value := range second {
-		diff.CheckNode(key, value)
+		if err := diff.CheckNode(key, value); err != nil {
+			return diff, err
+		}
 	}
 
-	return diff
+	return diff, nil
+}
+
+func SortedKeys(diff *Diff) []string {
+	return slices.Sorted(slices.Values(diff.keys))
 }

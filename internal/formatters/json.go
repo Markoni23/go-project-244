@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"encoding/json"
 	"fmt"
 	"strings"
@@ -13,7 +13,9 @@ func (j JSONFormatter) Format(diff *differ.Diff) (string, error) {
 	var lines []string
 	var line string
 
-	for _, key := range diff.Keys() {
+	keys := differ.SortedKeys(diff)
+
+	for _, key := range keys {
 		node := diff.GetNode(key)
 		if node.Type == differ.OBJECT_TYPE && isDiff(node.OriginalValue) {
 			nestedRes, err := j.Format(node.OriginalValue.(*differ.Diff))

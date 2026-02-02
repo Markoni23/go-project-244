@@ -1,7 +1,7 @@
 package formatters
 
 import (
-	"code/pkg/differ"
+	"code/internal/differ"
 	"os"
 	"testing"
 

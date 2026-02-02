@@ -1,9 +1,9 @@
 package code
 
 import (
-	"code/pkg/differ"
-	"code/pkg/formatters"
-	"code/pkg/parsers"
+	"code/internal/differ"
+	"code/internal/formatters"
+	"code/internal/parsers"
 	"os"
 	"path/filepath"
 )
@@ -19,7 +19,10 @@ func GenDiff(firstFile, secondFile string, format string) (string, error) {
 		return "", err
 	}
 
-	diff := differ.CalculateDiffTree(firstFileMap, secondFileMap)
+	diff, err := differ.CalculateDiffTree(firstFileMap, secondFileMap)
+	if err != nil {
+		return "", err
+	}
 
 	res, err := FormatDiff(diff, format)
 	if err != nil {
@@ -72,4 +75,3 @@ func FormatDiff(diff *differ.Diff, format string) (string, error) {
 
 	return res, nil
 }
-
